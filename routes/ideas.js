@@ -2,7 +2,7 @@ import express from "express";
 
 const router = express.Router();
 
-const ideas = [
+let ideas = [
   {
     id: 1,
     description: "Develop a mobile app to track daily fitness activities",
@@ -63,8 +63,8 @@ router.get("/:id", (req, res) => {
 router.post("/", (req, res) => {
   const idea = {
     id: ideas.length + 1,
-    description: req.body.desc,
-    tag: req.body.tag.split(","),
+    description: req.body.description,
+    tags: req.body.tags.split(","),
     username: req.body.username,
     date: new Date().toISOString().slice(0, 10),
   };
@@ -72,6 +72,46 @@ router.post("/", (req, res) => {
   console.log(idea);
   ideas.push(idea);
   res.json({ success: true, data: idea });
+});
+
+// update an idea
+router.put("/:id", (req, res, next) => {
+  const id = parseInt(req.params.id);
+  const idea = ideas.find((idea) => idea.id === id);
+
+  if (!idea) {
+    return res
+      .status(404)
+      .json({ success: false, error: "Resource not found" });
+  }
+
+  for (const key in idea) {
+    if (key !== "id" && key !== "username") {
+      if (Array.isArray(idea[key])) {
+        idea[key] = req.body[key].split(",") || idea[key];
+      } else {
+        idea[key] = req.body[key] || idea[key];
+      }
+    }
+  }
+
+  console.log(idea);
+  res.status(200).json({ success: true, data: idea });
+});
+
+// delete an idea
+router.delete("/:id", (req, res, next) => {
+  const id = parseInt(req.params.id);
+  const idea = ideas.find((idea) => idea.id === id);
+  if (!idea) {
+    return res
+      .status(404)
+      .json({ success: false, error: "Resource not found" });
+  }
+
+  ideas = ideas.filter((idea) => idea.id !== id);
+
+  res.status(200).json({ success: true, data: ideas });
 });
 
 export { router };
