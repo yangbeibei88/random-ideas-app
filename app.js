@@ -1,4 +1,6 @@
 import express from "express";
+import { fileURLToPath } from "node:url";
+import path, { dirname } from "node:path";
 import { router as ideasRouter } from "./routes/ideas.js";
 import { connectDB } from "./config/db.js";
 
@@ -7,6 +9,12 @@ connectDB();
 const PORT = process.env.PORT || 8080;
 
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Static folder
+app.use(express.static(path.join(__dirname, "public")));
 
 // body parser middleware
 app.use(express.json());
