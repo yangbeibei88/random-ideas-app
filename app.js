@@ -1,5 +1,8 @@
 import express from "express";
 import { router as ideasRouter } from "./routes/ideas.js";
+import { connectDB } from "./config/db.js";
+
+connectDB();
 
 const PORT = process.env.PORT || 8080;
 
