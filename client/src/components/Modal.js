@@ -8,6 +8,8 @@ export class Modal {
   addEventListeners() {
     this._modalBtn.addEventListener("click", this.open.bind(this));
     window.addEventListener("click", this.outsideClickHandler.bind(this));
+
+    document.addEventListener("closeModal", this.close.bind(this));
   }
 
   open() {
