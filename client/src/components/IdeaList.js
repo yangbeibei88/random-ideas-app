@@ -1,10 +1,34 @@
-import ideasApi from "../services/ideasApi.js";
+import ideasApi from "../services/ideasApi";
 
 export class IdeaList {
   constructor() {
     this._ideaListEl = document.getElementById("idea-list");
     this._ideas = [];
     this.getIdeas();
+  }
+
+  addEventListeners() {
+    this._ideaListEl.addEventListener("click", (e) => {
+      if (e.target.classList.contains("fa-times")) {
+        e.stopImmediatePropagation();
+        const ideaId = e.target.parentElement.parentElement.dataset.id;
+        console.log(ideaId);
+        this.deleteIdea(ideaId);
+      }
+    });
+  }
+
+  async deleteIdea(ideaId) {
+    try {
+      // delete from sever
+      const res = await ideasApi.deleteIdea(ideaId);
+      // delete from DOM
+      this._ideas.filter((idea) => idea._id !== ideaId);
+      this.getIdeas();
+    } catch (error) {
+      alert("You cannot delete this idea");
+      console.log(error);
+    }
   }
 
   async getIdeas() {
@@ -25,11 +49,17 @@ export class IdeaList {
 
   render() {
     this._ideaListEl.innerHTML = this._ideas
-      .map(({ id, description, tags, username, date }) => {
+      .map(({ _id, description, tags, username, date }) => {
         return `
-        <div class="card">
-        <button class="delete"><i
-            class="fas fa-times"></i></button>
+        <div class="card" data-id="${_id}">
+
+        ${
+          username === localStorage.getItem("username")
+            ? `<button class="delete"><i
+            class="fas fa-times"></i></button>`
+            : ""
+        }
+
         <h3>
           ${description}
         </h3>
@@ -49,5 +79,6 @@ export class IdeaList {
         `;
       })
       .join("");
+    this.addEventListeners();
   }
 }
