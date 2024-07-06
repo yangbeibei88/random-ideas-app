@@ -45,18 +45,32 @@ export const createIdea = async (req, res) => {
 // update an idea
 export const updateIdea = async (req, res) => {
   try {
-    const updatedIdea = await Idea.findByIdAndUpdate(
-      req.params.id,
-      {
-        $set: {
-          description: req.body.description,
-          tags: req.body.tags.split(","),
+    const idea = await Idea.findById(req.params.id);
+    // match the username
+    if (idea.username === req.body.username) {
+      const updatedIdea = await Idea.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: {
+            description: req.body.description,
+            tags: Array.isArray(req.body.tags)
+              ? req.body.tags
+              : typeof req.body.tags === "string"
+              ? req.body.tags.split(",").map((tag) => tag.trim().toLowerCase())
+              : idea.tags,
+          },
         },
-      },
-      { new: true }
-    );
-    console.log(updatedIdea);
-    res.status(200).json({ success: true, data: updatedIdea });
+        { new: true }
+      );
+      console.log(updatedIdea);
+      return res.status(200).json({ success: true, data: updatedIdea });
+    }
+
+    // username doesn't match
+    res.status(403).json({
+      success: false,
+      error: "You are not authorised to update this idea",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, error: "Something went wrong" });
@@ -66,8 +80,18 @@ export const updateIdea = async (req, res) => {
 // delete an idea
 export const deleteIdea = async (req, res) => {
   try {
-    await Idea.findByIdAndDelete(req.params.id);
-    res.status(200).json({ success: true, data: {} });
+    const idea = await Idea.findById(req.params.id);
+    // match the username
+    if (idea.username === req.body.username) {
+      await Idea.findByIdAndDelete(req.params.id);
+      return res.status(200).json({ success: true, data: {} });
+    }
+
+    // username doesn't match
+    res.status(403).json({
+      success: false,
+      error: "You are not authorised to delete this idea",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, error: "Something went wrong" });
