@@ -28,7 +28,7 @@ export const createIdea = async (req, res) => {
   // instantiate new Idea
   const newIdea = new Idea({
     description: req.body.description,
-    tags: req.body.tags.split(","),
+    tags: req.body.tags.split(",").map((tag) => tag.trim().toLowerCase()),
     username: req.body.username,
   });
 

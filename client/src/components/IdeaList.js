@@ -18,6 +18,11 @@ export class IdeaList {
     }
   }
 
+  addIdeaToList(idea) {
+    this._ideas.push(idea);
+    this.render();
+  }
+
   render() {
     this._ideaListEl.innerHTML = this._ideas
       .map(({ id, description, tags, username, date }) => {
