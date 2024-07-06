@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { fileURLToPath } from "node:url";
 import path, { dirname } from "node:path";
 import { router as ideasRouter } from "./routes/ideas.js";
@@ -19,6 +20,14 @@ app.use(express.static(path.join(__dirname, "public")));
 // body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// cors middleware
+app.use(
+  cors({
+    origin: ["http://localhost:8080", "http://localhost:3000"],
+    credentials: true,
+  })
+);
 
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the RandomIdeas API" });

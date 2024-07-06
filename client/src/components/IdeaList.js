@@ -1,31 +1,21 @@
+import ideasApi from "../services/ideasApi.js";
+
 export class IdeaList {
   constructor() {
     this._ideaListEl = document.getElementById("idea-list");
-    this._ideas = [
-      {
-        id: 1,
-        description: "Idea 1",
-        tags: ["nodejs", "react"],
-        username: "john",
-        date: "2024-07-07",
-      },
-      {
-        id: 2,
-        description: "Idea 2",
-        tags: ["nodejs", "react"],
-        username: "john",
-        date: "2024-07-07",
-      },
-      {
-        id: 3,
-        description: "Idea 3",
-        tags: ["nodejs", "react"],
-        username: "john",
-        date: "2024-07-07",
-      },
-    ];
+    this._ideas = [];
+    this.getIdeas();
+  }
 
-    this.render();
+  async getIdeas() {
+    try {
+      const res = await ideasApi.getIdeas();
+      this._ideas = res.data.data;
+      this.render();
+      console.log(this._ideas);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   render() {
