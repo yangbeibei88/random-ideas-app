@@ -15,10 +15,24 @@ export class IdeaForm {
   async submitHandler(e) {
     e.preventDefault();
 
+    // frontend form validation
+    for (let i = 0; i < this._form.elements.length; i++) {
+      if (
+        this._form.elements[i].value.trim() === "" &&
+        this._form.elements[i].type !== "submit"
+      ) {
+        alert("Please enter all fields");
+        return;
+      }
+    }
+
+    // save user to local storage
+    localStorage.setItem("username", this._form.elements.username.value.trim());
+
     const idea = {
-      description: this._form.elements.description.value,
-      tags: this._form.elements.tags.value,
-      username: this._form.elements.username.value,
+      description: this._form.elements.description.value.trim(),
+      tags: this._form.elements.tags.value.trim(),
+      username: this._form.elements.username.value.trim(),
     };
 
     // add idea to server
@@ -35,6 +49,8 @@ export class IdeaForm {
       this._form.elements[i].value = "";
     }
 
+    this.render();
+
     // dispatch the event to Modal class
     document.dispatchEvent(new Event("closeModal"));
   }
@@ -46,7 +62,11 @@ export class IdeaForm {
         <label for="username">Enter a
           Username</label>
         <input type="text" name="username"
-          id="username" />
+          id="username" value="${
+            localStorage.getItem("username")
+              ? localStorage.getItem("username")
+              : ""
+          }" />
       </div>
       <div class="form-control">
         <label for="description">What's Your
